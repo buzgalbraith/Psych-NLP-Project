@@ -1,3 +1,7 @@
+"""
+Authored by: Buz Galbraith
+
+"""
 import json
 
 class json_pareser:
