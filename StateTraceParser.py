@@ -5,14 +5,15 @@ Authored by: Buz Galbraith
 import json
 
 class json_pareser:
-    def set_postion_time(self):
+    
+    def set_ball_postion_time(self):
         i=0
-        self.postion_time={}
+        self.ball_postion_time={}
         for j in range(self.data["lastStepNum"]):
-            self.postion_time[j]=self.data['ballPositions'][i]
+            self.ball_postion_time[j]=self.data['ballPositions'][i]
             if(j==self.data['ballPositionsCT'][i] and i<(len(self.data['ballPositions'])-1)):
                 i=i+1
-        self.postion_time[self.data['ballPositionsCT'][-1]]=self.data['ballPositions'][-1]
+        self.ball_postion_time[self.data['ballPositionsCT'][-1]]=self.data['ballPositions'][-1]
         
     def set_velocity_time(self):
         i=0
@@ -22,14 +23,21 @@ class json_pareser:
             if(j==self.data['velocitiesCT'][i] and i<(len(self.data['velocities'])-1)):
                 i=i+1
         self.velocity_time[self.data['velocitiesCT'][-1]]=self.data['velocities'][-1]
+    
+    make_slice= lambda self,x:self.data["objectPositions"][(x)*int(len(self.data["objectPositions"])/len(self.data["foundObjectsTags"])):(x+1)*int(len(self.data["objectPositions"])/len(self.data["foundObjectsTags"]))]
+    
     def set_object_postion_time(self):
-        i=0
-        self.objectPositions_time={}
-        for j in range(self.data["lastStepNum"]):
-            self.objectPositions_time[j]=self.data['objectPositions'][i]
-            if(j==self.data['objectPositionsCT'][i] and i<(len(self.data['objectPositions'])-1)):
-                i=i+1
-        self.objectPositions_time[self.data['objectPositionsCT'][-1]]=self.data['objectPositions'][-1]
+        self.object_postion_time={}
+        for i in range(len(self.data["foundObjectsTags"])):
+            slice=self.make_slice(i)
+            j=0
+            self.object_postion_time[self.data["foundObjectsTags"][i]]={}
+            for l in range(self.data["lastStepNum"]):
+                self.object_postion_time[self.data["foundObjectsTags"][i]][l]=slice[j]
+                if(l==self.data['objectPositionsCT'][j] and j<(len(slice)-1)):
+                    j=j+1
+                self.object_postion_time[self.data["foundObjectsTags"][i]][len(slice)-1]=slice[-1]
+    
     def set_notes_time(self):
         i=0
         self.notes_time={}
@@ -39,6 +47,7 @@ class json_pareser:
                 if(j==self.data['notesCT'][i] and i<(len(self.data['notes'])-1)):
                     i=i+1
             self.notes_time[self.data['notesCT'][-1]]=self.data['notes'][-1]
+    
 
     def __init__(self,path):
         """ 1. data is just the json dictionary
@@ -49,7 +58,7 @@ class json_pareser:
 
             """
         self.data=json.load(open(path))    
-        self.set_postion_time()
+        self.set_ball_postion_time()
         self.set_velocity_time()
         self.set_object_postion_time()
         self.set_notes_time()
