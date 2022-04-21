@@ -47,7 +47,12 @@ class json_pareser:
                 if(j==self.data['notesCT'][i] and i<(len(self.data['notes'])-1)):
                     i=i+1
             self.notes_time[self.data['notesCT'][-1]]=self.data['notes'][-1]
-    
+    def set_resets(self):
+        self.reset_times={}
+        for i in range(self.data["lastStepNum"]):
+            self.reset_times[i]=0
+            if(i in self.data["resetCT"]):
+                self.reset_times[i]=1
 
     def __init__(self,path):
         """ 1. data is just the json dictionary
@@ -62,4 +67,11 @@ class json_pareser:
         self.set_velocity_time()
         self.set_object_postion_time()
         self.set_notes_time()
+        self.set_resets()
+        self.lastStepNum=self.data["lastStepNum"]
+        self.boxMaxX=self.data["boxMaxX"]
+        self.boxMaxY=self.data["boxMaxY"]
+        self.boxMinY=self.data["boxMinY"]
+        self.boxMinX=self.data["boxMinX"]
+        
 
