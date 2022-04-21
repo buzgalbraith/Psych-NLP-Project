@@ -52,13 +52,14 @@ class json_pareser:
                 self.reset_times[i]=1
 
     def make_df(self):
-        a=pd.Series([self.object_postion_time["corner"][x]["x"] for x in range(len(self.object_postion_time["corner"]))])
+        
+        a=pd.Series([self.object_postion_time["corner"][x][y] for x in range(len(self.object_postion_time["corner"]))]for y in self.object_postion_time["corner"][1].keys())
         b=pd.Series([self.ball_postion_time[x][y] for x in range(len(self.ball_postion_time))] for y in self.ball_postion_time[1].keys())
         c=pd.Series([self.velocity_time[x][y] for x in range(len(self.velocity_time))] for y in self.velocity_time[1].keys())
-        d=pd.Series([self.object_postion_time["bucket"][x]["x"] for x in range(len(self.object_postion_time["bucket"]))])
-        e=pd.Series([self.object_postion_time["triangle"][x]["x"] for x in range(len(self.object_postion_time["triangle"]))])
-        f=pd.Series([self.object_postion_time["gear"][x]["x"] for x in range(len(self.object_postion_time["gear"]))])
-        g=pd.Series([self.object_postion_time["crate"][x]["x"] for x in range(len(self.object_postion_time["crate"]))])
+        d=pd.Series([self.object_postion_time["bucket"][x][y] for x in range(len(self.object_postion_time["bucket"]))]for y in self.object_postion_time["bucket"][1].keys())
+        e=pd.Series([self.object_postion_time["triangle"][x][y] for x in range(len(self.object_postion_time["triangle"]))]for y in self.object_postion_time["triangle"][1].keys())
+        f=pd.Series([self.object_postion_time["gear"][x][y] for x in range(len(self.object_postion_time["gear"]))]for y in self.object_postion_time["triangle"][1].keys())
+        g=pd.Series([self.object_postion_time["crate"][x][y] for x in range(len(self.object_postion_time["crate"]))]for y in self.object_postion_time["triangle"][1].keys())
         h=pd.Series(self.reset_times[i] for i in range(len(self.reset_times)))
         i=pd.Series(self.note_times[i] for i in range(len(self.note_times)))
         temp={'Ball X':b[0], "Ball Y":b[1], "Velocity X":c[0],"Velocity Y":c[1],
@@ -96,3 +97,10 @@ class json_pareser:
         self.make_df()
         self.wall_hits=self.df[[self.row_check(i) for i in range(len(self.df["Ball X"]))]]
         self.not_wall_hits=self.df[[self.row_check(i)==False for i in range(len(self.df["Ball X"]))]]
+        self.above_bucket=self.df[self.df["Ball Y"]>=self.df["Bucket Y"]]
+        self.above_corner=self.df[self.df["Ball Y"]>=self.df["Corner Y"]]
+        self.above_traingle=self.df[self.df["Ball Y"]>=self.df["Triangle Y"]]
+        self.above_gear=self.df[self.df["Ball Y"]>=self.df["Gear Y"]]
+        self.above_crate=self.df[self.df["Ball Y"]>=self.df["Crate Y"]]
+        
+        
