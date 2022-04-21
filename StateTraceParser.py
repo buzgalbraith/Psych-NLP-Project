@@ -36,11 +36,11 @@ class StateTraceParser:
             i) == False for i in range(len(self.df["Ball X"]))]]
         self.above_bucket = self.df[self.df["Ball Y"] >= self.df["Bucket Y"]]
         self.above_corner = self.df[self.df["Ball Y"] >= self.df["Corner Y"]]
-        self.above_traingle = self.df[self.df["Ball Y"]
+        self.above_triangle = self.df[self.df["Ball Y"]
                                       >= self.df["Triangle Y"]]
         self.above_gear = self.df[self.df["Ball Y"] >= self.df["Gear Y"]]
         self.above_crate = self.df[self.df["Ball Y"] >= self.df["Crate Y"]]
-        
+
     def set_ball_postion_time(self):
         i = 0
         self.ball_postion_time = {}
