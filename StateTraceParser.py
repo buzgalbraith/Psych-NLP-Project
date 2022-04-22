@@ -1,5 +1,5 @@
 """
-Authored by: Buz Galbraith
+Authored By: Buz Galbraith
 
 """
 import json
