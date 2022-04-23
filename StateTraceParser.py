@@ -2,8 +2,9 @@
 Authored By: Buz Galbraith
 
 """
-import json
+
 import pandas as pd
+import json
 
 class StateTraceParser:
     def __init__(self, path):
@@ -54,9 +55,9 @@ class StateTraceParser:
         ballPos.columns = ["ball_x", "ball_y"]
         self.df = pd.concat((ballPos, objPos), axis=1)
         self.df.loc[self.data["velocitiesCT"], ["velocity_x", "velocity_y"]] = list(zip(pd.DataFrame(self.data["velocities"])["x"], pd.DataFrame(self.data["velocities"])["y"]))
-        self.df.fillna(0, inplace=True)
         self.df.loc[self.data["resetCT"], "reset"] = 1
         self.df.loc[self.data["notesCT"], "note_taken"] = 1
+        self.df.fillna(0, inplace=True)
 
     def row_check(self, x): 
         return (self.df["ball_x"][x] <= self.walls["X"]["Min"]) or \
@@ -71,11 +72,6 @@ class StateTraceParser:
         MAX_Y_DELTA = 0.6142134666442871
 
         x_delta = self.df.loc[timestep, "ball_x"] - self.df.loc[timestep, "bucket_x"]
-        y_delta = self.df.loc[timestep, "ball_y"] - self.df.loc[timestep, "buclet_y"]
+        y_delta = self.df.loc[timestep, "ball_y"] - self.df.loc[timestep, "bucket_y"]
 
         return (MAX_X_DELTA>=x_delta>=MIN_X_DELTA) and (MAX_Y_DELTA>=y_delta>=MIN_Y_DELTA)
-        
-
-
-
-
