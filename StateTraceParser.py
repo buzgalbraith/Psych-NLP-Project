@@ -5,9 +5,6 @@ Authored By: Buz Galbraith
 import json
 import pandas as pd
 
-import json
-import pandas as pd
-
 class StateTraceParser:
     def __init__(self, path):
         """ 1. data is just the json dictionary
@@ -66,5 +63,19 @@ class StateTraceParser:
                 (self.df["ball_x"][x] >= self.walls["X"]["Max"]) or \
                 (self.df["ball_y"][x] <= self.walls["Y"]["Min"]) or \
                 (self.df["ball_y"][x] >= self.walls["Y"]["Max"])
+
+    def ballInBucket(self, timestep):
+        MIN_X_DELTA = -0.1927506923675537
+        MAX_X_DELTA = 0.2523689270019531
+        MIN_Y_DELTA = -0.24334418773651123
+        MAX_Y_DELTA = 0.6142134666442871
+
+        x_delta = self.df.loc[timestep, "ball_x"] - self.df.loc[timestep, "bucket_x"]
+        y_delta = self.df.loc[timestep, "ball_y"] - self.df.loc[timestep, "buclet_y"]
+
+        return (MAX_X_DELTA>=x_delta>=MIN_X_DELTA) and (MAX_Y_DELTA>=y_delta>=MIN_Y_DELTA)
+        
+
+
 
 
