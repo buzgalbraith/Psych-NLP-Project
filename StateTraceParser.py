@@ -54,7 +54,10 @@ class StateTraceParser:
         ballPos = pd.DataFrame(self.data["ballPositions"])[["x", "y"]]
         ballPos.columns = ["ball_x", "ball_y"]
         self.df = pd.concat((ballPos, objPos), axis=1)
-        self.df.loc[self.data["velocitiesCT"], ["velocity_x", "velocity_y"]] = list(zip(pd.DataFrame(self.data["velocities"])["x"], pd.DataFrame(self.data["velocities"])["y"]))
+        if len(self.data["velocitiesCT"])>0:
+            self.df.loc[self.data["velocitiesCT"], ["velocity_x", "velocity_y"]] = list(zip(pd.DataFrame(self.data["velocities"])["x"], pd.DataFrame(self.data["velocities"])["y"]))
+        else:
+            self.df[["velocity_x", "velocity_y"]] = 0.0
         self.df.loc[self.data["resetCT"], "reset"] = 1
         self.df.loc[self.data["notesCT"], "note_taken"] = 1
         self.df.fillna(0, inplace=True)
