@@ -4,8 +4,9 @@ Authored By: Buz Galbraith
 """
 
 import pandas as pd
+import numpy as np
 import json
-
+from PlaceAndShootGym import *
 class StateTraceParser:
     def __init__(self, path):
         """ 1. data is just the json dictionary
@@ -21,8 +22,9 @@ class StateTraceParser:
             11. not_wall_hits subset of df where teh ball does not hit the wall 9is the complement of wall hits)
         """
         self.data = json.load(open(path))
-        self.tags = self.data["foundObjectsTags"]
-        self.dim = len(self.tags)
+        self.obj_tags = self.data["foundObjectsTags"]
+        self.colision_tags=self.data["foundCollidersTags"]
+        self.dim = len(self.obj_tags)
         self.lastStepNum = self.data["lastStepNum"]
         self.walls = {"X": {"Max": self.data["boxMaxX"],
                             "Min": self.data["boxMinX"]},
@@ -40,13 +42,19 @@ class StateTraceParser:
                                       >= self.df["triangle_y"]]
         self.above_gear = self.df[self.df["ball_y"] >= self.df["gear_y"]]
         self.above_crate = self.df[self.df["ball_y"] >= self.df["crate_y"]]
+        
+        self.obs_vector=[]
+        cols = ['bucket_x','bucket_y','corner_x','corner_y','crate_x','crate_y','gear_x','gear_y','triangle_x','triangle_y'\
+                ,'ball_x','ball_y', 'velocity_x','velocity_y','reset','collisons']
+        for i in range(self.lastStepNum):
+            self.obs_vector.append(self.df[cols].iloc[i])
 
     def make_df(self):
         def makeDict(posVec):
             dct = {}
             for i in range(self.dim):
-                dct.update({f"{self.tags[i]}_x": posVec[i]["x"],
-                            f"{self.tags[i]}_y": posVec[i]["y"]})
+                dct.update({f"{self.obj_tags[i]}_x": posVec[i]["x"],
+                            f"{self.obj_tags[i]}_y": posVec[i]["y"]})
             return dct
         reshaped = [makeDict(self.data["objectPositions"][i:i+self.dim]) for i
                     in range(0, len(self.data["objectPositions"]), self.dim)]
@@ -61,6 +69,10 @@ class StateTraceParser:
         self.df.loc[self.data["resetCT"], "reset"] = 1
         self.df.loc[self.data["notesCT"], "note_taken"] = 1
         self.df.fillna(0, inplace=True)
+        self.df["collisons"]=np.zeros([self.lastStepNum])
+        for i in range(len(self.data["ballCollisions"])):
+            self.df["collisons"][self.data["ballCollisionsCT"][i]]=self.data["ballCollisions"][i]
+        
 
     def row_check(self, x): 
         return (self.df["ball_x"][x] <= self.walls["X"]["Min"]) or \
@@ -78,3 +90,5 @@ class StateTraceParser:
         y_delta = self.df.loc[timestep, "ball_y"] - self.df.loc[timestep, "bucket_y"]
 
         return (MAX_X_DELTA>=x_delta>=MIN_X_DELTA) and (MAX_Y_DELTA>=y_delta>=MIN_Y_DELTA)
+
+
