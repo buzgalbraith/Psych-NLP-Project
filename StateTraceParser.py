@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import json
 from PlaceAndShootGym import *
+
 class StateTraceParser:
     def __init__(self, path):
         """ 1. data is just the json dictionary
@@ -20,6 +21,7 @@ class StateTraceParser:
             9. df time indexed aggreagate dictioanry . 
             10. wall_hits subset of df where the ball hits walls. 
             11. not_wall_hits subset of df where teh ball does not hit the wall 9is the complement of wall hits)
+            12. obs_vector a 2d vector such that [reset_number][obs_number]
         """
         self.data = json.load(open(path))
         self.obj_tags = self.data["foundObjectsTags"]
@@ -44,10 +46,14 @@ class StateTraceParser:
         self.above_crate = self.df[self.df["ball_y"] >= self.df["crate_y"]]
         
         self.obs_vector=[]
+        temp=[]
         cols = ['bucket_x','bucket_y','corner_x','corner_y','crate_x','crate_y','gear_x','gear_y','triangle_x','triangle_y'\
-                ,'ball_x','ball_y', 'velocity_x','velocity_y','reset','collisons']
+                        ,'ball_x','ball_y', 'velocity_x','velocity_y','collisons','reset']
         for i in range(self.lastStepNum):
-            self.obs_vector.append(self.df[cols].iloc[i])
+            temp.append(Obs(self.df[cols].iloc[i]))
+            if(self.df["reset"][i]==1.0 or i==self.lastStepNum-1):
+                self.obs_vector.append(temp)
+                temp=[]
 
     def make_df(self):
         def makeDict(posVec):
